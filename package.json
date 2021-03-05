@@ -1,8 +1,8 @@
 {
   "name": "roam-export",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A set of tools to Filter/transform/render RoamResearch JSON export. Used in Roam Garden",
-  "main": "dist/filtering.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "npm run clean && npm run compile",
     "compile": "tsc",
