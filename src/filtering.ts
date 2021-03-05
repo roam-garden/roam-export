@@ -1,59 +1,17 @@
 import * as _ from "lodash"
-import { truthy } from "./utils"
+import { truthy } from "./common"
 import { RoamBlock, RoamPage } from "./types"
+import { getFlatBlockList, getReferencedBlocks, isPublic, removeChildMatching, visitChildren } from "./roam-utils"
 
 // TODO: consider adding StartsWith as in https://github.com/dvargas92495/generate-roam-site-action
 // TODO: add option to toggle whether we pull in referenced blocks or exclude them
 export interface Filter {
+  makeAllPagesPublic?: boolean
   makePagesWithTheseTagsPublic: Array<string>
   makeBlocksWithTheseTagsPrivate: Array<string>
 }
 
-
-const isPublic = (page: Readonly<RoamPage>, publicMarkers: Array<string>) =>
-  (publicMarkers.includes(page.title) || extractChildren(page).some(it => matchesMarker(it, publicMarkers)))
-
-function matchesMarker(block: RoamBlock, markers: Array<string>) {
-  const toRegex = (marker: String) => new RegExp(`#?\\[\\[${marker}]]|#${marker}`)
-  const markerRegexes = markers.map(toRegex)
-  return markerRegexes.some(marker => block?.string?.match(marker))
-}
-
-const getFlatBlockList = (pages: Readonly<RoamPage>[]) => pages.flatMap(extractChildren)
-
-const extractChildren = (block: Readonly<RoamBlock | RoamPage>): Array<Readonly<RoamBlock>> =>
-  block.children?.flatMap(it => [it, ...extractChildren(it)]) || []
-
-
-function getReferencedBlocks(originPages: Readonly<RoamPage>[], allPages: RoamPage[]): Readonly<RoamBlock>[] {
-  const publicBlocks = getFlatBlockList(originPages)
-  const referencedBlockIds =
-    new Set(publicBlocks.flatMap(it => it.refs?.map(ref => ref.uid) || []))
-
-  return getFlatBlockList(allPages).filter(it => referencedBlockIds.has(it.uid || ""))
-}
-
-
-const removeChildMatching = (
-  page: Readonly<RoamPage | RoamBlock>,
-  privateMarkers: Array<string>,
-): Readonly<RoamPage | RoamBlock> => ({
-  ...page,
-  children: page?.children
-    ?.filter(it => !matchesMarker(it, privateMarkers))
-    ?.map(it => removeChildMatching(it, privateMarkers)) as RoamBlock[],
-})
-
-
-function visitChildren(
-  block: Readonly<RoamPage | RoamBlock>,
-  visit: (block: Readonly<RoamPage | RoamBlock>) => void,
-) {
-  visit(block)
-  block?.children?.forEach(it => visitChildren(it, visit))
-}
-
-export class RoamJson {
+export class RoamJsonQuery {
   readonly blockToPage = new Map()
   readonly pageByName: Map<string, Readonly<RoamPage>>
   readonly pageByUid: Map<string, Readonly<RoamPage>>
@@ -92,7 +50,7 @@ export class RoamJson {
 
     return {
       pages: pagesToRender,
-      blockUidsToRender,
+      blockUids: blockUidsToRender,
     }
   }
 
@@ -142,8 +100,11 @@ export class RoamJson {
   removePrivateBlocks = (pages: RoamPage[]) =>
     pages.map(page => removeChildMatching(page, this.filter.makeBlocksWithTheseTagsPrivate))
 
-  findPublicPages = (pages: Array<Readonly<RoamPage>>) =>
-    pages.filter(it => isPublic(it, this.filter.makePagesWithTheseTagsPublic))
+  findPublicPages = (pages: Array<Readonly<RoamPage>>) => {
+    if (this.filter.makeAllPagesPublic) return pages
+
+    return pages.filter(it => isPublic(it, this.filter.makePagesWithTheseTagsPublic))
+  }
 
   private buildBlockToPageMap() {
     this.allPages.forEach(it => visitChildren(it, block => {
