@@ -1,0 +1,45 @@
+{
+  "name": "roam-export",
+  "version": "0.1.0",
+  "description": "A set of tools to Filter/transform/render RoamResearch JSON export. Used in Roam Garden",
+  "main": "dist/filtering.js",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "compile": "tsc",
+    "watch": "npm run compile -- --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roam-garden/roam-export.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "roam",
+    "roamresearch",
+    "export",
+    "json",
+    "roam-garden"
+  ],
+  "author": "Vladyslav Sitalo",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/roam-garden/roam-export/issues"
+  },
+  "homepage": "https://github.com/roam-garden/roam-export#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/lodash": "^4.14.168",
+    "jest": "^26.6.3",
+    "jest-cli": "^26.6.3",
+    "jest-extended": "^0.11.5",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
