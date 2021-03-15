@@ -2,6 +2,12 @@
 
 Export filtering and processing library for https://roam.garden/
 
+### Installation
+
+```
+npm i roam-export
+```
+
 ### Usage
 
 A basic usage is as follows:
@@ -19,4 +25,4 @@ const { pages, blockUids } = new RoamJsonQuery(allPages,
 // do something with pages
 ```
 
-There are more tools for operating on Roam JSON available internally
+There are more tools for operating on Roam JSON available internally (see https://github.com/roam-garden/roam-export/blob/master/src/roam-utils.ts and https://github.com/roam-garden/roam-export/blob/master/src/filtering.ts)
