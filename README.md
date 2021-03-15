@@ -13,7 +13,8 @@ import { readFileSync } from "fs"
 const data = readFileSync("path to json export", "utf8")
 const allPages = JSON.parse(data) as Array<RoamPage>
   
-const { pages, blockUids } = new RoamJsonQuery(allPages, options.filter).getPagesToRender()
+const { pages, blockUids } = new RoamJsonQuery(allPages, 
+  {makePagesWithTheseTagsPublic: ["make-public"], makeBlocksWithTheseTagsPrivate: []}).getPagesToRender()
   
 // do something with pages
 ```
