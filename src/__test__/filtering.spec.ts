@@ -27,7 +27,12 @@ const emptyFilter = {
 
 const filterWithPublicMarker = {
   ...emptyFilter,
-  makePagesWithTheseTagsPublic: [publicMarkerPage.title]
+  makePagesWithTheseTagsPublic: [publicMarkerPage.title],
+}
+
+const filterAskingForTestPage = {
+  ...emptyFilter,
+  pagesToMakePublic: [testPage.title],
 }
 
 const allPublicFilter = {
@@ -57,5 +62,18 @@ describe("RoamJsonQuery", () => {
     const toRender = new RoamJsonQuery(allPages, allPublicFilter).getPagesToRender()
 
     expect(toRender.pages).toIncludeAllMembers(allPages)
+  })
+
+  it("should return test page when filter explicitly asks for it", () => {
+    const toRender = new RoamJsonQuery(allPages, filterAskingForTestPage).getPagesToRender()
+
+    expect(toRender.pages).toEqual([testPage])
+  })
+
+  it("should return all request public pages from combination of filters", () => {
+    const toRender = new RoamJsonQuery(allPages,
+      { ...filterAskingForTestPage, ...filterWithPublicMarker }).getPagesToRender()
+
+    expect(toRender.pages).toIncludeAllMembers([publicMarkerPage, pageWithPublicMarker, testPage])
   })
 })

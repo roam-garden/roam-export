@@ -7,6 +7,11 @@ import { getFlatBlockList, getReferencedBlocks, isPublic, removeChildMatching, v
 // TODO: add option to toggle whether we pull in referenced blocks or exclude them
 export interface Filter {
   makeAllPagesPublic?: boolean
+  /**
+   * Pages to explicitly make public (mainly used for entry page)
+   */
+  pagesToMakePublic?: Array<string>
+
   makePagesWithTheseTagsPublic: Array<string>
   makeBlocksWithTheseTagsPrivate: Array<string>
 }
@@ -29,6 +34,7 @@ export class RoamJsonQuery {
   }
 
   getPagesToRender() {
+    console.log("Starting filtering process with the following settings", this.filter)
     const pagesWithoutPrivateBlocks = this.removePrivateBlocks(this.allPages) as RoamPage[]
     const publicPages = this.findPublicPages(pagesWithoutPrivateBlocks)
 
@@ -103,8 +109,12 @@ export class RoamJsonQuery {
   findPublicPages = (pages: Array<Readonly<RoamPage>>) => {
     if (this.filter.makeAllPagesPublic) return pages
 
-    return pages.filter(it => isPublic(it, this.filter.makePagesWithTheseTagsPublic))
+    return pages.filter(it => this.isPublic(it))
   }
+
+  isPublic = (page: Readonly<RoamPage>) =>
+    this.filter.pagesToMakePublic?.includes(page.title) ||
+    isPublic(page, this.filter.makePagesWithTheseTagsPublic)
 
   private buildBlockToPageMap() {
     this.allPages.forEach(it => visitChildren(it, block => {
