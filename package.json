@@ -1,6 +1,6 @@
 {
   "name": "roam-export",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A set of tools to Filter/transform/render RoamResearch JSON export. Used in Roam Garden",
   "main": "dist/index.js",
   "scripts": {
