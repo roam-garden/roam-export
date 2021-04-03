@@ -1,49 +1,72 @@
 {
   "name": "roam-export",
-  "version": "0.1.2",
   "description": "A set of tools to Filter/transform/render RoamResearch JSON export. Used in Roam Garden",
+  "version": "0.1.2",
+  "author": "Vladyslav Sitalo",
+  "bin": {
+    "roam-export": "./bin/run"
+  },
+  "bugs": {
+    "url": "https://github.com/roam-garden/roam-export/issues"
+  },
+  "dependencies": {
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^3",
+    "lodash": "^4.17.21",
+    "tslib": "^1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.9",
+    "@babel/preset-typescript": "^7.13.0",
+    "@oclif/dev-cli": "^1",
+    "@types/jest": "^26.0.20",
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^10",
+    "babel-jest": "^26.6.3",
+    "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
+    "jest": "^26.6.3",
+    "jest-cli": "^26.6.3",
+    "jest-extended": "^0.11.5",
+    "ts-node": "^8",
+    "typescript": "^4.2.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "dist"
+  ],
+  "homepage": "https://github.com/roam-garden/roam-export#readme",
+  "keywords": [
+    "export",
+    "json",
+    "roam",
+    "roam-garden",
+    "roamresearch"
+  ],
+  "license": "Apache-2.0",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "npm run clean && npm run compile",
-    "compile": "tsc",
-    "watch": "npm run compile -- --watch",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build",
-    "test": "jest"
+  "oclif": {
+    "bin": "roam-export"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/roam-garden/roam-export.git"
   },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "roam",
-    "roamresearch",
-    "export",
-    "json",
-    "roam-garden"
-  ],
-  "author": "Vladyslav Sitalo",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/roam-garden/roam-export/issues"
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf dist",
+    "compile": "tsc",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "version": "oclif-dev readme && git add README.md",
+    "watch": "npm run compile -- --watch"
   },
-  "homepage": "https://github.com/roam-garden/roam-export#readme",
-  "devDependencies": {
-    "@babel/core": "^7.13.8",
-    "@babel/preset-env": "^7.13.9",
-    "@babel/preset-typescript": "^7.13.0",
-    "@types/jest": "^26.0.20",
-    "@types/lodash": "^4.14.168",
-    "babel-jest": "^26.6.3",
-    "jest": "^26.6.3",
-    "jest-cli": "^26.6.3",
-    "jest-extended": "^0.11.5",
-    "typescript": "^4.2.3"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
+  "types": "lib/index.d.ts"
 }
