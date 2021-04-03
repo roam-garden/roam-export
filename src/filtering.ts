@@ -1,7 +1,14 @@
 import * as _ from "lodash"
 import { truthy } from "./common"
 import { RoamBlock, RoamPage } from "./types"
-import { getFlatBlockList, getReferencedBlocks, isPublic, removeChildMatching, visitChildren } from "./roam-utils"
+import {
+  getFlatBlockList,
+  getReferencedBlocks,
+  isPublic,
+  removeChildMatching,
+  removeHierarchicalDuplicates,
+  visitChildren,
+} from "./roam-utils"
 
 // TODO: consider adding StartsWith as in https://github.com/dvargas92495/generate-roam-site-action
 // TODO: add option to toggle whether we pull in referenced blocks or exclude them
@@ -99,7 +106,7 @@ export class RoamJsonQuery {
           `page that were quoted elsewhere.`,
         uid: `orphan-${this.orphanId++}`,
       } as RoamBlock,
-        ...blocks,
+        ...removeHierarchicalDuplicates(blocks),
       ],
     })
 

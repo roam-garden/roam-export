@@ -9,7 +9,7 @@ function matchesMarker(block: RoamBlock, markers: Array<string>) {
   return markerRegexes.some(marker => block?.string?.match(marker))
 }
 
-export const getFlatBlockList = (pages: Readonly<RoamPage>[]) => pages.flatMap(extractChildren)
+export const getFlatBlockList = (pages: Readonly<RoamPage | RoamBlock>[]) => pages.flatMap(extractChildren)
 const extractChildren = (block: Readonly<RoamBlock | RoamPage>): Array<Readonly<RoamBlock>> =>
   block.children?.flatMap(it => [it, ...extractChildren(it)]) || []
 
@@ -37,4 +37,10 @@ export function visitChildren(
 ) {
   visit(block)
   block?.children?.forEach(it => visitChildren(it, visit))
+}
+
+export function removeHierarchicalDuplicates(blocks: Readonly<RoamBlock>[]): Readonly<RoamBlock>[] {
+  const nestedUids = new Set(getFlatBlockList(blocks).map(it => it.uid))
+
+  return blocks.filter(it => !nestedUids.has(it.uid))
 }

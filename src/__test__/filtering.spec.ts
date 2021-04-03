@@ -36,13 +36,39 @@ const filterAskingForTestPage = {
 }
 
 const allPublicFilter = {
-  ...filterWithPublicMarker,
-  makePagesWithTheseTagsPublic: [publicMarkerPage.title],
+  ...emptyFilter,
   makeAllPagesPublic: true,
 }
 
+const parentOrphanUid = "parent-orphan-uid"
+const childOrphanUid = "child-orphan-uid"
+const pageToBeOrphaned: RoamPage = {
+  title: "pageToBeOrphaned",
+  uid: "pageToBeOrphaned-uid",
+  children: [{
+    uid: parentOrphanUid,
+    string: "parent-orphan",
+    children: [{
+      uid: childOrphanUid,
+      string: "child-orphan",
+    }],
+  }],
+}
 
-const allPages = [publicMarkerPage, pageWithPublicMarker, testPage]
+const pageReferencingOrphan: RoamPage = {
+  title: "pageReferencingOrphan",
+  uid: "pageReferencingOrphan-uid",
+  children: [{
+    uid: "referencer",
+    string: `((${parentOrphanUid})), ((${childOrphanUid}))`,
+    refs: [parentOrphanUid, childOrphanUid].map(it => ({
+      uid: it,
+    })),
+  }],
+}
+
+
+const allPages = [publicMarkerPage, pageWithPublicMarker, testPage, pageToBeOrphaned, pageReferencingOrphan]
 
 describe("RoamJsonQuery", () => {
   it("should return empty results when filter is empty", () => {
@@ -76,4 +102,25 @@ describe("RoamJsonQuery", () => {
 
     expect(toRender.pages).toIncludeAllMembers([publicMarkerPage, pageWithPublicMarker, testPage])
   })
+
+  it("handle orphan reference hierarchy without creating duplicate blocks", () => {
+    /**
+     * Embeddings on a multiple levels create an obscure problem with blocks
+     * duplicating. So when you have a reference to higher level block and then to it's child
+     * they both become independently referenced. and will show up multiple times on the page
+     *
+     * This also had downstream effects of making filtering non-idempotent (starting to duplicate blocks)
+     */
+
+    const toRender = new RoamJsonQuery(allPages,
+      {...emptyFilter, pagesToMakePublic: [pageReferencingOrphan.title]}).getPagesToRender()
+
+    expect(toRender.pages).toContainEqual(pageReferencingOrphan)
+    expect(toRender.pages).toBeArrayOfSize(2)
+
+    const orphan = toRender.pages.find(it =>it.uid == pageToBeOrphaned.uid)
+    // Orphan declaration + original top level block without duplication
+    expect(orphan!.children).toBeArrayOfSize(2)
+  })
+
 })
